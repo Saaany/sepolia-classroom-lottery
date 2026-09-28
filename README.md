@@ -596,65 +596,7 @@ The smart contract will:
 8. Prepare the next round.
 
 ---
-
-# 18. GitHub Pages
-
-Create a GitHub repository:
-
-```text
-sepolia-classroom-lottery
-```
-
-Upload:
-
-```text
-index.html
-app.js
-README.md
-.gitignore
-contracts/SepoliaClassroomLottery.sol
-```
-
-Then open:
-
-```text
-Settings
-→ Pages
-```
-
-Choose:
-
-```text
-Deploy from a branch
-```
-
-Select:
-
-```text
-main
-```
-
-and:
-
-```text
-/ (root)
-```
-
-Click:
-
-```text
-Save
-```
-
-GitHub will generate a URL similar to:
-
-```text
-https://YOUR-USERNAME.github.io/sepolia-classroom-lottery/
-```
-
----
-
-# 19. Student Workflow
+# 18. Student Workflow
 
 Each student needs:
 
@@ -679,7 +621,7 @@ The student enters an amount and confirms the transaction.
 
 ---
 
-# 20. Organizer Workflow
+# 19. Organizer Workflow
 
 The organizer connects the deployment wallet.
 
@@ -714,7 +656,7 @@ Start Round Again
 
 ---
 
-# 21. Security / Educational Limitations
+# 20. Security / Educational Limitations
 
 This project intentionally uses simplified randomness:
 
@@ -741,7 +683,7 @@ Other production considerations include:
 
 ---
 
-# 22. Learning Objectives
+# 21. Learning Objectives
 
 This project demonstrates:
 
@@ -766,7 +708,7 @@ This project demonstrates:
 
 ---
 
-# 23. Important Formula Summary
+# 22. Important Formula Summary
 
 ### Winning probability
 
