@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Sepolia Classroom Lottery</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+        }
+
+        header p {
+            margin: 0;
+            opacity: 0.85;
+        }
+
+        .container {
+            width: min(1100px, 92%);
+            margin: 25px auto;
+        }
+
+        .warning {
+            background: #fff7ed;
+            border-left: 5px solid #f97316;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+
+        .card h2 {
+            margin-top: 0;
+        }
+
+        .wallet {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            border: none;
+            border-radius: 8px;
+            padding: 12px 18px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+        }
+
+        .primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .success {
+            background: #16a34a;
+            color: white;
+        }
+
+        .danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .stat {
+            background: #f8fafc;
+            padding: 18px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 25px;
+            margin-top: 8px;
+        }
+
+        .timer {
+            text-align: center;
+            font-size: 45px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .status {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .panel {
+            border-left: 5px solid #2563eb;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        input {
+            flex: 1;
+            min-width: 220px;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .players {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+        }
+
+        .player {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .probability {
+            margin-top: 8px;
+            font-weight: bold;
+        }
+
+        .message {
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+        .result {
+            background: #ecfdf5;
+            border-left: 5px solid #16a34a;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .formula {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+        }
+
+        @media (max-width: 800px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .timer {
+                font-size: 35px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🎟️ Sepolia Classroom Lottery</h1>
+    <p>Educational weighted lottery using Ethereum Sepolia test ETH</p>
+</header>
+
+<div class="container">
+
+    <div class="warning">
+        <strong>⚠️ Educational Project:</strong>
+        This application is designed for classroom demonstration
+        using Ethereum Sepolia test ETH. The randomness mechanism
+        is not suitable for real-value production applications.
+    </div>
+
+    <!-- WALLET -->
+
+    <div class="card">
+        <div class="wallet">
+            <div>
+                <strong>Wallet:</strong>
+                <span id="walletAddress">-</span>
+                <br>
+                <span id="walletStatus">Not connected</span>
+            </div>
+
+            <button
+                id="connectButton"
+                class="primary"
+                onclick="connectWallet()"
+            >
+                Connect MetaMask
+            </button>
+        </div>
+    </div>
+
+    <!-- ROUND INFORMATION -->
+
+    <div class="card">
+
+        <h2>Current Round</h2>
+
+        <div class="stats">
+
+            <div class="stat">
+                Round
+                <strong id="roundNumber">-</strong>
+            </div>
+
+            <div class="stat">
+                Minimum Entry
+                <strong id="minimumContribution">-</strong>
+            </div>
+
+            <div class="stat">
+                Total Pot
+                <strong id="totalPot">-</strong>
+            </div>
+
+            <div class="stat">
+                Players
+                <strong id="playerCount">-</strong>
+            </div>
+
+        </div>
+
+        <div
+            id="timer"
+            class="timer"
+        >
+            00:00
+        </div>
+
+        <div
+            id="roundStatus"
+            class="status"
+        >
+            🔴 Round is STOPPED
+        </div>
+
+    </div>
+
+    <!-- ORGANIZER -->
+
+    <div
+        id="organizerPanel"
+        class="card panel hidden"
+    >
+
+        <h2>👑 Organizer Panel</h2>
+
+        <p>
+            Only the wallet that deployed the contract can control
+            the lottery rounds.
+        </p>
+
+        <button
+            id="startRoundButton"
+            class="success"
+            onclick="startRound()"
+        >
+            Start Round
+        </button>
+
+        <button
+            id="stopRoundButton"
+            class="danger"
+            onclick="stopRound()"
+        >
+            Stop Round & Select Winner
+        </button>
+
+        <div
+            id="organizerMessage"
+            class="message"
+        ></div>
+
+    </div>
+
+    <!-- STUDENT -->
+
+    <div
+        id="studentPanel"
+        class="card panel hidden"
+    >
+
+        <h2>🎟️ Enter Lottery</h2>
+
+        <p>
+            You may contribute any amount greater than or equal to
+            the minimum entry.
+        </p>
+
+        <p>
+            <strong>Your contribution determines your winning
+            probability.</strong>
+        </p>
+
+        <div class="formula">
+            Pᵢ = Your Contribution / Total Pot
+        </div>
+
+        <div class="formula">
+            Reward = min(Your Contribution × (1 + Pᵢ), Total Pot)
+        </div>
+
+        <div class="input-group">
+
+            <input
+                type="number"
+                id="amountInput"
+                placeholder="Amount in ETH"
+                min="0"
+                step="0.0001"
+            >
+
+            <button
+                id="enterButton"
+                class="primary"
+                onclick="enterLottery()"
+            >
+                Enter Lottery
+            </button>
+
+        </div>
+
+        <div
+            id="entryMessage"
+            class="message"
+        ></div>
+
+    </div>
+
+    <!-- PLAYERS -->
+
+    <div class="card">
+
+        <h2>👥 Current Players</h2>
+
+        <div
+            id="playersList"
+            class="players"
+        >
+            No players yet.
+        </div>
+
+    </div>
+
+    <!-- RESULT -->
+
+    <div
+        id="resultCard"
+        class="card result hidden"
+    >
+
+        <h2>🏆 Latest Result</h2>
+
+        <div id="latestResult"></div>
+
+    </div>
+
+    <!-- HOW IT WORKS -->
+
+    <div class="card">
+
+        <h2>📚 How It Works</h2>
+
+        <ol>
+
+            <li>
+                The organizer deploys the smart contract.
+            </li>
+
+            <li>
+                The organizer manually starts a round.
+            </li>
+
+            <li>
+                Students enter by contributing test ETH.
+            </li>
+
+            <li>
+                Each student can enter only once per round.
+            </li>
+
+            <li>
+                A student's contribution determines their
+                probability of winning.
+            </li>
+
+            <li>
+                The organizer manually stops the round.
+            </li>
+
+            <li>
+                The smart contract selects a weighted winner.
+            </li>
+
+            <li>
+                The winner's probability is calculated from their
+                contribution relative to the total pot.
+            </li>
+
+            <li>
+                The winner receives:
+                <strong>
+                    min(contribution × (1 + probability), total pot)
+                </strong>
+            </li>
+
+            <li>
+                Any remaining ETH goes to the organizer.
+            </li>
+
+            <li>
+                A new round is automatically prepared, but the
+                organizer must manually start it.
+            </li>
+
+        </ol>
+
+        <h3>Example</h3>
+
+        <p>
+            Suppose the total pot is 0.010 ETH and a player
+            contributed 0.006 ETH.
+        </p>
+
+        <div class="formula">
+            Pᵢ = 0.006 / 0.010 = 0.60
+        </div>
+
+        <div class="formula">
+            Reward = 0.006 × (1 + 0.60)
+                    = 0.0096 ETH
+        </div>
+
+        <p>
+            Because 0.0096 ETH is below the 0.010 ETH pot,
+            the player receives 0.0096 ETH.
+        </p>
+
+        <p>
+            If a player contributed 0.007 ETH to a 0.010 ETH pot:
+        </p>
+
+        <div class="formula">
+            Reward = 0.007 × (1 + 0.70)
+                    = 0.0119 ETH
+        </div>
+
+        <p>
+            The reward is capped at the pot:
+        </p>
+
+        <div class="formula">
+            Final Reward = min(0.0119, 0.010)
+                        = 0.010 ETH
+        </div>
+
+    </div>
+
+</div>
+
+<footer>
+    Sepolia Classroom Lottery — Educational Blockchain Project
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
+
+<script src="app.js"></script>
+
+</body>
+</html>
